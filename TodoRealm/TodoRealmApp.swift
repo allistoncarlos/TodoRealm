@@ -6,12 +6,17 @@
 //
 
 import SwiftUI
+import RealmSwift
 
 @main
-struct TodoRealmApp: App {
+struct TodoRealmApp: SwiftUI.App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            LoginView(
+                viewModel: LoginView.ViewModel(
+                    app: App(id: Config.appId)
+                )
+            )
         }
     }
 }
