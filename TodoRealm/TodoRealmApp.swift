@@ -10,13 +10,39 @@ import RealmSwift
 
 @main
 struct TodoRealmApp: SwiftUI.App {
+    private var app = App(id: Config.appId)
+    
     var body: some Scene {
         WindowGroup {
-            LoginView(
-                viewModel: LoginView.ViewModel(
-                    app: App(id: Config.appId)
-                )
-            )
+            resultView()
         }
+    }
+    
+    @MainActor
+    private func resultView() -> some View {
+        return if let user = app.currentUser {
+            AnyView(todoListView(user: user))
+        } else {
+            AnyView(loginView())
+        }
+    }
+    
+    @MainActor
+    private func loginView() -> some View {
+        LoginView(viewModel: LoginView.ViewModel())
+            .environmentObject(app)
+    }
+    
+    @MainActor
+    private func todoListView(user: User) -> some View {
+        TodoListView(
+            viewModel: TodoListView.ViewModel()
+        )
+        .environment(\.realmConfiguration, user.flexibleSyncConfiguration(
+            clientResetMode: .recoverUnsyncedChanges(),
+            initialSubscriptions: { subs in
+                subs.append(QuerySubscription<Todo>())
+            }
+        ))
     }
 }

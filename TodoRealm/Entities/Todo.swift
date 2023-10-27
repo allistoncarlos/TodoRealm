@@ -8,7 +8,7 @@
 import Foundation
 import RealmSwift
 
-class Todo: Object {
+class Todo: Object, Identifiable {
    @Persisted(primaryKey: true) var _id: ObjectId
    @Persisted var name: String = ""
     
